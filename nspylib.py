@@ -78,8 +78,8 @@ def sendEmailFromConfigParam(conf_filename, title, message, recipients):
 
 #-------------------------------------------------------------------------------
 
-def readJSONfromFile(filename):
-    with open(filename, 'r', encoding='UTF-8') as f:
+def readJSONfromFile(filename, enc='UTF-8'):
+    with open(filename, 'r', encoding=enc) as f:
         return json.load(f)
 
 #-------------------------------------------------------------------------------
@@ -113,10 +113,13 @@ def writeLINEtoFile(filename, new_line, mode='w'):
 
 #-------------------------------------------------------------------------------
 
-def writeLINEStoFile(filename, new_lines, mode='w'):
+def writeLINEStoFile(filename, new_lines, mode='w', sep='\n'):
     with open(filename, mode, encoding='UTF-8') as f:
-        for line in new_lines:
-            f.write(line + '\n')
+        if isinstance(new_lines, list):
+            for line in new_lines:
+                f.write(line + sep)
+        elif isinstance(new_lines, str):
+            f.write(new_lines)
 
 #-------------------------------------------------------------------------------
 
@@ -139,6 +142,8 @@ def writeLogLINEtoFile(filename, new_line):
 #-------------------------------------------------------------------------------
 
 def ipToInt(ip):
+    if '/' in ip:
+        ip = ip.split('/')[0]
     ip_obj = ipaddress.ip_address(ip)
     if isinstance(ip_obj, ipaddress.IPv4Address):
         return int(ipaddress.IPv4Address(ip))
@@ -149,6 +154,21 @@ def ipToInt(ip):
 
 def sortedIPs(ip_list):
     return sorted(ip_list, key=ipToInt)
+
+#-------------------------------------------------------------------------------
+
+def CIDRtoIpRage(cidr):
+    return str(ipaddress.IPv4Network(cidr)[0]), str(ipaddress.IPv4Network(cidr)[-1])
+
+#-------------------------------------------------------------------------------
+
+def ipRangeToCIDR(ip_first, ip_last):
+    return [str(ipnet) for ipnet in ipaddress.summarize_address_range(ipaddress.IPv4Address(ip_first), ipaddress.IPv4Address(ip_last))]
+
+#-------------------------------------------------------------------------------
+
+def CIDRsubstract(cidr1, cidr2):
+    return sortedIPs(list(map(str, ipaddress.ip_network(cidr1).address_exclude(ipaddress.ip_network(cidr2)))))
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
