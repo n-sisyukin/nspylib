@@ -15,14 +15,16 @@ GB = 2 ** 30  #  1GB in bytes
 TB = 2 ** 40  #  1TB in bytes
 
 import os, sys, json, codecs, requests, urllib3, ssl, smtplib, ipaddress
+import xml.etree.ElementTree as xml
+
+from xml.etree.ElementInclude import include
+
 from requests.auth import HTTPBasicAuth
 
 from re import A
 
 from datetime import datetime as dt
 from time import time
-
-from xml.etree.ElementInclude import include
 
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -75,6 +77,15 @@ def sendEmailFromConfigParam(conf_filename, title, message, recipients):
     sendEmail(title, message, recipients, 
               sender['login'], sender['password'], 
               sender['server'], sender['port'], ssl_mode=True)
+
+#-------------------------------------------------------------------------------
+
+def readXMLfromFile(filename):
+    # find
+    # findall
+    tree = xml.parse(filename)
+    root = tree.getroot()
+    return root
 
 #-------------------------------------------------------------------------------
 
