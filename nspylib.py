@@ -35,8 +35,24 @@ urllib3.disable_warnings()
 
 #-------------------------------------------------------------------------------
 
-def nowDateTime():
-    return f'{dt.now():%Y-%m-%d %H:%M:%S}'
+def nowDateTime(sp=None):
+    if sp:
+        sp1, sp2, sp3 = sp, sp, sp
+    else:
+        sp1, sp2, sp3 = '-', ' ', ':'  
+
+    now = dt.now()
+    
+    year = str(now.year).rjust(4, '0')
+    month = str(now.month).rjust(2, '0')
+    day = str(now.day).rjust(2, '0')
+    hour = str(now.hour).rjust(2, '0')
+    minute = str(now.minute).rjust(2, '0')
+    second = str(now.second).rjust(2, '0')
+    
+    now = f'{year}{sp1}{month}{sp1}{day}{sp2}{hour}{sp3}{minute}{sp3}{second}'
+
+    return now
 
 #-------------------------------------------------------------------------------
 
@@ -76,7 +92,7 @@ def sendEmailFromConfigParam(conf_filename, title, message, recipients):
     sender = readJSONfromFile(conf_filename)
     sendEmail(title, message, recipients, 
               sender['login'], sender['password'], 
-              sender['server'], sender['port'], ssl_mode=True)
+              sender['server'], sender['port'], ssl_mode=sender['ssl'])
 
 #-------------------------------------------------------------------------------
 
@@ -182,11 +198,6 @@ def CIDRsubstract(cidr1, cidr2):
     return sortedIPs(list(map(str, ipaddress.ip_network(cidr1).address_exclude(ipaddress.ip_network(cidr2)))))
 
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-def main():
-    pass
 
 if __name__ == '__main__':
-    main()
+    print("This is a library module and should not be run directly.")
