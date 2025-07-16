@@ -14,7 +14,7 @@ MB = 2 ** 20  #  1MB in bytes
 GB = 2 ** 30  #  1GB in bytes
 TB = 2 ** 40  #  1TB in bytes
 
-import os, sys, json, codecs, requests, urllib3, ssl, smtplib, ipaddress
+import os, sys, json, codecs, requests, urllib3, ssl, smtplib, ipaddress, base64, zlib
 import xml.etree.ElementTree as xml
 
 from xml.etree.ElementInclude import include
@@ -105,6 +105,47 @@ def readXMLfromFile(filename):
 
 #-------------------------------------------------------------------------------
 
+def printKeyLenJSON(data, varname=''):
+    print('-' * 50)
+    print(varname)
+    print('-' * 50)
+    for key, value in data.items():
+        print(f'{key} - {len(value)}')
+    print('-' * 50, '\n')
+
+#-------------------------------------------------------------------------------
+
+def is_valid_json(s: str) -> bool:
+    try:
+        json.loads(s)
+        return True
+    except json.JSONDecodeError:
+        return False
+
+#-------------------------------------------------------------------------------
+
+def jsonToBase64(text):
+    return base64.b64encode(json.dumps(text).encode('utf-8')).decode('utf-8')
+
+#-------------------------------------------------------------------------------
+
+def base64ToJson(base64_data):
+    return json.loads(base64.b64decode(base64_data).decode('utf-8'))
+
+#-------------------------------------------------------------------------------
+
+def base64SplitToMany(base64_data, part_size):
+    parts = []
+    for i in range(0, len(base64_data), part_size):
+        parts.append(base64_data[i:i + part_size])
+    return parts
+
+#-------------------------------------------------------------------------------
+
+def base64JoinFromMany(base64_data_parts):
+    return ''.join(base64_data_parts)
+#-------------------------------------------------------------------------------
+
 def readJSONfromFile(filename, enc='UTF-8'):
     with open(filename, 'r', encoding=enc) as f:
         return json.load(f)
@@ -122,6 +163,12 @@ def dumpJSONtoScreen(data):
 
 #-------------------------------------------------------------------------------
 
+def readTEXTfromFile(filename):
+    with open(filename, 'r', encoding='UTF-8') as f:
+        return f.read()
+
+#-------------------------------------------------------------------------------
+
 def readLINEfromFile(filename):
     with open(filename, 'r', encoding='UTF-8') as f:
         return f.readline().split('\n')[0]
@@ -131,6 +178,12 @@ def readLINEfromFile(filename):
 def readLINESfromFile(filename):
     with open(filename, 'r', encoding='UTF-8') as f:
         return f.read().splitlines()
+
+#-------------------------------------------------------------------------------
+
+def writeTEXTtoFile(filename, text, mode='w'):
+    with open(filename, mode, encoding='UTF-8') as f:
+        f.write(text)
 
 #-------------------------------------------------------------------------------
 
@@ -146,7 +199,7 @@ def writeLINEStoFile(filename, new_lines, mode='w', sep='\n'):
             for line in new_lines:
                 f.write(line + sep)
         elif isinstance(new_lines, str):
-            f.write(new_lines)
+            f.write(new_lines + sep)
 
 #-------------------------------------------------------------------------------
 
@@ -198,6 +251,14 @@ def CIDRsubstract(cidr1, cidr2):
     return sortedIPs(list(map(str, ipaddress.ip_network(cidr1).address_exclude(ipaddress.ip_network(cidr2)))))
 
 #-------------------------------------------------------------------------------
+
+def sortDictByKey(data):
+    result = {key: data[key] for key in sorted(data.keys())}
+    return result
+
+def sortDictByValue(data):
+    result = {key: value for key, value in sorted(data.items(), key=lambda item: item[1])}
+    return result
 
 if __name__ == '__main__':
     print("This is a library module and should not be run directly.")
