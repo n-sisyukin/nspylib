@@ -222,13 +222,16 @@ def writeLogLINEtoFile(filename, new_line):
 #-------------------------------------------------------------------------------
 
 def ipToInt(ip):
-    if '/' in ip:
-        ip = ip.split('/')[0]
-    ip_obj = ipaddress.ip_address(ip)
-    if isinstance(ip_obj, ipaddress.IPv4Address):
-        return int(ipaddress.IPv4Address(ip))
-    elif isinstance(ip_obj, ipaddress.IPv6Address):
-        return int(ipaddress.IPv6Address(ip))
+    try:
+        if '/' in ip:
+            ip = ip.split('/')[0]
+        ip_obj = ipaddress.ip_address(ip)
+        if isinstance(ip_obj, ipaddress.IPv4Address):
+            return int(ipaddress.IPv4Address(ip))
+        elif isinstance(ip_obj, ipaddress.IPv6Address):
+            return int(ipaddress.IPv6Address(ip))
+    except:
+        return 0
 
 #-------------------------------------------------------------------------------
 
