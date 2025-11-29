@@ -235,6 +235,24 @@ def ipToInt(ip):
 
 #-------------------------------------------------------------------------------
 
+def network_masks():
+
+    netmasks = {}
+    netmasks_invert = {}
+    for i in range(0, 33):
+        bin_mask = '1' * i + '0' * (32-i)
+        octets_bin = []
+        octets_dec = []
+        for j in range(4):
+            octets_bin.append(bin_mask[j*8:j*8+8])
+            octets_dec.append(str(int('0b'+bin_mask[j*8:j*8+8], 2)))
+        netmasks[str(i)] = '.'.join(octets_dec)
+        netmasks_invert['.'.join(octets_dec)] = str(i)
+
+    return [netmasks, netmasks_invert]
+
+#-------------------------------------------------------------------------------
+
 def sortedIPs(ip_list):
     return sorted(ip_list, key=ipToInt)
 
